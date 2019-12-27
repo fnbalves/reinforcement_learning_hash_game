@@ -13,13 +13,14 @@ MAX_TRIES = 100
 EXPLOIT_FACTOR = 0.30
 VERBOSE = False
 VISUAL_DELAY = 0
-
+FOLDER_TO_SAVE = 'players'
 NUM_EPOCH_TO_SAVE = 10000
 
 ALPHA = 0.1
 GAMMA = 0.2
 
-debug_num_failures = 0
+if not os.path.isdir(FOLDER_TO_SAVE):
+    os.mkdir(FOLDER_TO_SAVE)
 
 def random_play(state):
     copied_state = copy.deepcopy(state)
@@ -99,7 +100,7 @@ for epoch in range(NUM_EPOCHS):
             break
 
     if epoch % NUM_EPOCH_TO_SAVE == 0:
-        out = open(os.path.join('players', 'player_%d.pickle' % epoch), 'wb')
+        out = open(os.path.join(FOLDER_TO_SAVE, 'player_%d.pickle' % epoch), 'wb')
         pickle.dump(player, out)
         out.close()
 
