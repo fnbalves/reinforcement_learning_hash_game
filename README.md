@@ -1,6 +1,6 @@
 In order to use this code, first train the model using 
-train_hash_player_rl_next.py, then modify the play_hash.py file to load 
-the latest q_matrix and play. 
+train_hash_player.py, then modify the play_hash.py file to load 
+the latest player and play. 
 
 The hash game house numeration is as follows:
 <br>

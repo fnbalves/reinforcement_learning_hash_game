@@ -14,11 +14,19 @@ class BaseTablePlayer:
         except:
             return 0.0
     
-    def update_q_value(self, action, val):
+    def update_q_value(self, state, action, val):
         try:
             self.growing_q_table[state][action] = val
         except KeyError:
             self.growing_q_table[state] = {action: val}
     
-    def best_action_for_state(state, default_action):
-        
+    def best_action_for_state(self, state, default_action, verbose=False):
+        try:
+            if verbose:
+                for k in self.growing_q_table[state].keys():
+                    print('Action ', k, 'val ', self.growing_q_table[state][k])
+
+            action_to_do = max(self.growing_q_table[state], key=self.growing_q_table[state].get)
+            return action_to_do
+        except:
+            return default_action(state)

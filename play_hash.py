@@ -1,4 +1,5 @@
 from hash_game_env import *
+from base_player import *
 import time
 import copy
 import pickle
@@ -11,42 +12,12 @@ MAX_TRIES = 100
 EXPLOIT_FACTOR = 0.30
 VERBOSE = True
 
-growing_q_table = pickle.load(open(os.path.join('q_matrix', 'q_matrix_120000.pickle'), 'rb'))
+def random_play(state):
+    copied_state = copy.deepcopy(state)
+    return copied_state.step_randomly(HashGameState.PLAYER_0)
 
-def fetch_q(growing_q_table, state, action):
-    try:
-        return growing_q_table[state][action]
-    except KeyError:
-        return 0.0
-
-def fetch_max_q(growing_q_table, state, verbose=True):
-    if verbose:
-        for k in growing_q_table[state].keys():
-            print('Action ', k, 'val ', growing_q_table[state][k])
-    try:
-        return max(list(growing_q_table[state].values()))
-    except:
-        return 0.0
-
-def update_value(growing_q_table, state, action, val):
-    try:
-        growing_q_table[state][action] = val
-    except KeyError:
-        growing_q_table[state] = {action: val}
-
-def best_action_for_state(growing_q_table, state, player, verbose=True):
-    try:
-        if verbose:
-            for k in growing_q_table[state].keys():
-                print('Action ', k, 'val ', growing_q_table[state][k])
-
-        action_to_do = max(growing_q_table[state], key=growing_q_table[state].get)
-        return action_to_do
-    except:
-        print('Played random')
-        copied_state = copy.deepcopy(state)
-        return copied_state.step_randomly(player)
-
+player = pickle.load(open(os.path.join('players', 'player_20000.pickle'), 'rb'))
+    
 game = HashGame()
 all_possible_actions = game.possible_actions()
 
@@ -69,8 +40,7 @@ for epoch in range(NUM_EPOCHS):
                 action = HashActions(play_at=place_to_play)
                 game.play(current_player, action)
             else:
-                next_action = best_action_for_state(growing_q_table, game.current_state, current_player, verbose=VERBOSE)
-
+                next_action = player.best_action_for_state(game.current_state, random_play, verbose=True)
                 game.play(HashGameState.PLAYER_0, next_action)
 
             reward = game.evaluate_state()
@@ -94,5 +64,5 @@ for epoch in range(NUM_EPOCHS):
                 break
             num_iterations += 1
 
-        except:
+        except IndexError:
             break
